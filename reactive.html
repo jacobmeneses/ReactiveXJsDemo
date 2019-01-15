@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://unpkg.com/rxjs/bundles/rxjs.umd.min.js"></script>
+    <title>Document</title>
+</head>
+<style>
+    .draggable-box {
+        width: 100px;
+        height: 100px;
+        background: red;
+    }
+    .box-container {
+        border: 1px solid black;
+        height: 120px;
+    }
+    .box-container .dragged-over{
+        border: 1px solid red;
+    }
+</style>
+<body>
+
+    <h1>ReactiveX</h1>
+    <div id="main-menu">
+        <ul>
+            <li><a href="#" id="menu-li-1">Dashboard</a></li>
+            <li><a href="#" id="menu-li-2">My publications</a></li>
+        </ul>
+    </div>
+    
+    <div id="main-container">
+        <h2 class="title-container">Dashboard</h2>
+        <div id="sub-container"></div>
+
+        <div class="box-container"></div>
+        <div class="box-container">
+            <div draggable="true" class="draggable-box">
+                <p>hello</p>
+            </div>
+        </div>
+        <div class="box-container"></div>
+        <script>
+            var boxContainers = document.getElementsByClassName('box-container');
+            for(var i = 0; i < boxContainers.length; i++) {
+                var element =  boxContainers[i];
+
+                var enterObservable = rxjs.fromEvent(element, 'dragenter');
+                enterObservable.subscribe(function(e){
+                    console.log('BOXCONTAINER enter of drag event', event.target);
+                });
+            }
+
+            var draggableElements = document.getElementsByClassName('draggable-box');
+
+            console.log(draggableElements);
+
+            for(var i = 0; i < draggableElements.length;i++) {
+                var element = draggableElements[i];
+                var startObservable = rxjs.fromEvent(element, 'dragstart');
+                var endObservable = rxjs.fromEvent(element, 'dragend');
+                var enterObservable = rxjs.fromEvent(element, 'dragenter');
+
+                startObservable.subscribe(function(e){ console.log('start of drag event'); });
+                endObservable.subscribe(function(e){
+                    console.log('end of drag event');
+                });
+                // enterObservable.subscribe(function(e){ console.log('enter of drag event', event.target); });
+            }
+        </script>
+    </div>
+
+    <script>
+        var MainContainer = document.getElementById('main-container');
+        function change_title_container(title) {
+            var elements = MainContainer.getElementsByClassName('title-container');
+            if ( elements.length ) {
+                elements[0].innerHTML = title;
+            }
+        }
+
+        const mainMenu = {
+            items: [
+                {
+                    title: 'Dashboard',
+                    id: 'menu-li-1',
+                },
+                {
+                    title: 'My publications',
+                    id: 'menu-li-2'
+                }
+            ]
+        };
+        function setup_menu() {
+            mainMenu.items.forEach( function(item) {
+                var element = document.getElementById(item.id);
+                
+                var observable = rxjs.fromEvent(element, 'click');
+                observable.subscribe( function(e) {
+                    change_title_container(item.title);
+                });
+                item.observable = observable;
+            });
+        }
+
+        // app setup
+        setup_menu();
+
+    </script>
+</body>
+</html>
