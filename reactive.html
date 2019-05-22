@@ -10,12 +10,15 @@
 <style>
     .draggable-box {
         width: 100px;
-        height: 100px;
         background: red;
+    }
+    .draggable-box.enter-class {
+        background: green;
     }
     .box-container {
         border: 1px solid black;
-        height: 120px;
+        height: 167px;
+        margin-top: 25px;
     }
     .box-container .dragged-over{
         border: 1px solid red;
@@ -35,39 +38,58 @@
         <h2 class="title-container">Dashboard</h2>
         <div id="sub-container"></div>
 
-        <div class="box-container"></div>
-        <div class="box-container">
-            <div draggable="true" class="draggable-box">
-                <p>hello</p>
+        <div draggable="true"  class="box-container">
+            <div  class="draggable-box">
+                <div>
+                    <p>Some checkboxes</p>
+                    <div>
+                        <label>
+                            <input type="checkbox" checked="checked" name="checkoptionone"> Check option one 
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" checked="" name="checkoptiontwo"> Check option two
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="box-container"></div>
+        <div draggable="true" class="box-container">
+            <div class="draggable-box">
+                <div>
+                    <p>Some input</p>
+                    <div>
+                        <label for="fname"><i class="fa fa-user"></i> Full Name</label>
+                        <input type="text" id="fname" name="firstname" placeholder="John M. Doe">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div draggable="true" class="box-container">
+            <div  class="draggable-box">
+                <p>hello 3</p>
+            </div>
+        </div>
+
         <script>
             var boxContainers = document.getElementsByClassName('box-container');
             for(var i = 0; i < boxContainers.length; i++) {
                 var element =  boxContainers[i];
 
-                var enterObservable = rxjs.fromEvent(element, 'dragenter');
-                enterObservable.subscribe(function(e){
-                    console.log('BOXCONTAINER enter of drag event', event.target);
+                rxjs.fromEvent(element, 'dragenter').subscribe(function(e){
+                    if ( event.target.childNodes[1] ){
+                        event.target.childNodes[1].classList.toggle("enter-class");
+                    }
+                    
+                    console.log('BOXCONTAINER enter of drag event', event.target.childNodes[1]);
                 });
-            }
-
-            var draggableElements = document.getElementsByClassName('draggable-box');
-
-            console.log(draggableElements);
-
-            for(var i = 0; i < draggableElements.length;i++) {
-                var element = draggableElements[i];
-                var startObservable = rxjs.fromEvent(element, 'dragstart');
-                var endObservable = rxjs.fromEvent(element, 'dragend');
-                var enterObservable = rxjs.fromEvent(element, 'dragenter');
-
-                startObservable.subscribe(function(e){ console.log('start of drag event'); });
-                endObservable.subscribe(function(e){
-                    console.log('end of drag event');
+                rxjs.fromEvent(element, 'dragleave').subscribe(function(e){
+                    if ( event.target.childNodes[1] ){
+                        event.target.childNodes[1].classList.toggle("enter-class");
+                    }
+                    console.log('BOXCONTAINER LEAVING box-container');
                 });
-                // enterObservable.subscribe(function(e){ console.log('enter of drag event', event.target); });
             }
         </script>
     </div>
@@ -107,7 +129,6 @@
 
         // app setup
         setup_menu();
-
     </script>
 </body>
 </html>
