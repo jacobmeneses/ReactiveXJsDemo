@@ -5,93 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://unpkg.com/rxjs/bundles/rxjs.umd.min.js"></script>
+    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
     <title>Document</title>
 </head>
 <style>
-    .draggable-box {
-        width: 100px;
-        background: red;
-    }
-    .draggable-box.enter-class {
-        background: green;
-    }
-    .box-container {
-        border: 1px solid black;
-        height: 167px;
-        margin-top: 25px;
-    }
-    .box-container .dragged-over{
-        border: 1px solid red;
-    }
+  .market-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .market-list-item {
+    border: 1px solid gray;
+    border-radius: 4px;
+    margin: 4px 4px;
+    width: 32%;
+    display: flex;
+    flex-direction: row;
+  }
+  .mklist-item {
+    margin: 2px 2px;
+  }
+  .mklist-item-sub-container {
+    display: flex;
+    flex-direction: column;
+  }
+  .mklist-item-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 33.33%;
+  }
 </style>
 <body>
 
     <h1>ReactiveX</h1>
     <div id="main-menu">
         <ul>
-            <li><a href="#" id="menu-li-1">Dashboard</a></li>
-            <li><a href="#" id="menu-li-2">My publications</a></li>
+            <li><a href="#" id="menu-li-1">Home</a></li>
         </ul>
     </div>
-    
+
     <div id="main-container">
-        <h2 class="title-container">Dashboard</h2>
+        <h2 class="title-container">Home</h2>
         <div id="sub-container"></div>
-
-        <div draggable="true"  class="box-container">
-            <div  class="draggable-box">
-                <div>
-                    <p>Some checkboxes</p>
-                    <div>
-                        <label>
-                            <input type="checkbox" checked="checked" name="checkoptionone"> Check option one 
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            <input type="checkbox" checked="" name="checkoptiontwo"> Check option two
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div draggable="true" class="box-container">
-            <div class="draggable-box">
-                <div>
-                    <p>Some input</p>
-                    <div>
-                        <label for="fname"><i class="fa fa-user"></i> Full Name</label>
-                        <input type="text" id="fname" name="firstname" placeholder="John M. Doe">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div draggable="true" class="box-container">
-            <div  class="draggable-box">
-                <p>hello 3</p>
-            </div>
-        </div>
-
-        <script>
-            var boxContainers = document.getElementsByClassName('box-container');
-            for(var i = 0; i < boxContainers.length; i++) {
-                var element =  boxContainers[i];
-
-                rxjs.fromEvent(element, 'dragenter').subscribe(function(e){
-                    if ( event.target.childNodes[1] ){
-                        event.target.childNodes[1].classList.toggle("enter-class");
-                    }
-                    
-                    console.log('BOXCONTAINER enter of drag event', event.target.childNodes[1]);
-                });
-                rxjs.fromEvent(element, 'dragleave').subscribe(function(e){
-                    if ( event.target.childNodes[1] ){
-                        event.target.childNodes[1].classList.toggle("enter-class");
-                    }
-                    console.log('BOXCONTAINER LEAVING box-container');
-                });
-            }
-        </script>
     </div>
 
     <script>
@@ -103,22 +60,49 @@
             }
         }
 
+        function setup_subcontainer() {
+          var element = document.getElementById('sub-container');
+
+          let list_items = '';
+          for ( let i = 0 ; i < 10 ; i = i + 1 ) {
+            // Item ${i}
+            const long_description = `Long description of this item ${i} comes here. Long description of this item ${i} comes here`;
+            const list_item = `
+              <div class="market-list-item">
+
+                <div class="mklist-item-sub-container">
+                  <div class="mklist-item title">Title ${i}</div>
+                  <div class="mklist-item descrip"><p>${long_description}</p></div>
+                  <div class="mklist-item progress">Here is the progress funded</div>
+                </div>
+
+                <div class="mklist-item-actions">
+                  <div class="fund-action"> <ion-icon name="cash-outline"></ion-icon> </div>
+                </div>
+
+            </div>`;
+
+            list_items += list_item;
+          }
+
+          const contentSubContainer = `
+            <div class="market-list"> ${list_items} </div>
+          `;
+
+          element.innerHTML = contentSubContainer;
+        }
+
         const mainMenu = {
             items: [
                 {
-                    title: 'Dashboard',
+                    title: 'Home',
                     id: 'menu-li-1',
-                },
-                {
-                    title: 'My publications',
-                    id: 'menu-li-2'
                 }
             ]
         };
         function setup_menu() {
             mainMenu.items.forEach( function(item) {
                 var element = document.getElementById(item.id);
-                
                 var observable = rxjs.fromEvent(element, 'click');
                 observable.subscribe( function(e) {
                     change_title_container(item.title);
@@ -129,6 +113,7 @@
 
         // app setup
         setup_menu();
+        setup_subcontainer();
     </script>
 </body>
 </html>
